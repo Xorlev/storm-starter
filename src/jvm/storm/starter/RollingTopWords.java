@@ -3,6 +3,7 @@ package storm.starter;
 import storm.starter.bolt.IntermediateRankingsBolt;
 import storm.starter.bolt.RollingCountBolt;
 import storm.starter.bolt.TotalRankingsBolt;
+import storm.starter.spout.TwitterStreamingTopicSpout;
 import storm.starter.util.StormRunner;
 import backtype.storm.Config;
 import backtype.storm.testing.TestWordSpout;
@@ -44,7 +45,13 @@ public class RollingTopWords {
         String counterId = "counter";
         String intermediateRankerId = "intermediateRanker";
         String totalRankerId = "finalRanker";
-        builder.setSpout(spoutId, new TestWordSpout(), 5);
+
+        //builder.setSpout(spoutId, new TestWordSpout(), 5);
+
+        topologyConfig.put(TwitterStreamingTopicSpout.TWITTER_USERNAME_KEY, System.getenv("TWITTER_USERNAME"));
+        topologyConfig.put(TwitterStreamingTopicSpout.TWITTER_PASSWORD_KEY, System.getenv("TWITTER_PASSWORD"));
+        builder.setSpout(spoutId, new TwitterStreamingTopicSpout(), 1); // limited due to twitter's API
+
         builder.setBolt(counterId, new RollingCountBolt(9, 3), 4).fieldsGrouping(spoutId, new Fields("word"));
         builder.setBolt(intermediateRankerId, new IntermediateRankingsBolt(TOP_N), 4).fieldsGrouping(counterId,
             new Fields("obj"));

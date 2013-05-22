@@ -4,12 +4,12 @@
   :resource-paths ["multilang"]
   :aot :all
   :repositories {
-;;                 "twitter4j" "http://twitter4j.org/maven2"
+                 "twitter4j" "http://twitter4j.org/maven2"
                  }
 
   :dependencies [
-;;                 [org.twitter4j/twitter4j-core "2.2.6-SNAPSHOT"]
-;;                 [org.twitter4j/twitter4j-stream "2.2.6-SNAPSHOT"]
+                 [org.twitter4j/twitter4j-core "3.0.4-SNAPSHOT"]
+                 [org.twitter4j/twitter4j-stream "3.0.4-SNAPSHOT"]
                    [commons-collections/commons-collections "3.2.1"]
                  ]
 
