@@ -20,7 +20,7 @@ import backtype.storm.tuple.Fields;
  */
 public class RollingTopWords {
 
-    private static final int DEFAULT_RUNTIME_IN_SECONDS = 600;
+    private static final int DEFAULT_RUNTIME_IN_SECONDS = 3600 * 10; //ten hours
     private static final int TOP_N = 40;
 
     private final TopologyBuilder builder;
