@@ -12,7 +12,7 @@ public class Rankings implements Serializable {
     private static final int DEFAULT_COUNT = 10;
 
     private final int maxSize;
-    private final List<Rankable> rankedItems = Lists.newArrayList();
+    private final List<Rankable> rankedItems;
 
     public Rankings() {
         this(DEFAULT_COUNT);
@@ -23,6 +23,19 @@ public class Rankings implements Serializable {
             throw new IllegalArgumentException("topN must be >= 1");
         }
         maxSize = topN;
+        rankedItems = Lists.newArrayList();
+    }
+
+    private Rankings(Rankings other) {
+        maxSize = other.maxSize;
+        rankedItems = Lists.newArrayList(other.rankedItems);
+    }
+
+    /**
+     * Deep copy
+     */
+    public Rankings deepCopy(){
+        return new Rankings(this);
     }
 
     /**

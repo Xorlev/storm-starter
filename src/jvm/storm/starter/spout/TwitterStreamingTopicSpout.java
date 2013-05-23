@@ -7,6 +7,7 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 import org.apache.log4j.Logger;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -37,7 +38,7 @@ public class TwitterStreamingTopicSpout extends BaseRichSpout {
                         .build()
         );
 
-        final String[] terms = new String[] { "obama" }; // todo: pull from config, etc..
+        final String[] terms = new String[] { "#gluecon" }; // todo: pull from config, etc..
 
         TwitterStream stream = fact.getInstance();
         stream.addListener(new QueuingStatusListener());
@@ -47,12 +48,12 @@ public class TwitterStreamingTopicSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        try {
-            String word = queue.take();
+        String word = queue.poll();
+        if (word != null) {
             log.info("Emitting word: " + word);
             spoutOutputCollector.emit(new Values(word));
-        } catch (InterruptedException e) {
-            // drop
+        } else {
+            Utils.sleep(40);
         }
     }
 
@@ -65,8 +66,6 @@ public class TwitterStreamingTopicSpout extends BaseRichSpout {
     private class QueuingStatusListener implements StatusListener {
         @Override
         public void onStatus(Status status) {
-            publish("@" + status.getUser().getName());// author
-
             for (String topic : extractTopics(status)) {
                 publish(topic);
             }
@@ -98,8 +97,8 @@ public class TwitterStreamingTopicSpout extends BaseRichSpout {
         }
 
         public void publish(final String topic) {
-            if (!queue.offer(topic)) {
-                log.warn("Queue is full, dropping topic: " + topic);
+            if (!queue.offer(topic.toLowerCase())) {
+                log.warn("Queue is full, dropping topic: " + topic.toLowerCase());
             }
 
         }
